@@ -1,0 +1,32 @@
+seed: 42
+out_dir: runs/base
+
+data:
+  n_samples: 12000
+  n_features: 20
+  anomaly_rate: 0.05
+  train_fraction: 0.6
+  # Fraction of the training set that is actually anomalous. 0.0 is the
+  # textbook assumption; real data is rarely this clean.
+  contamination: 0.0
+  sweep_values: [0.0, 0.01, 0.02, 0.05, 0.10]
+
+model:
+  arch: autoencoder       # autoencoder | vae
+  hidden_sizes: [64, 32]
+  latent_dim: 8           # must be well below n_features or the model learns identity
+  dropout: 0.0
+  beta: 1.0               # VAE only; high values cause posterior collapse
+
+detect:
+  # Fraction of normal traffic permitted to raise an alert. This is an
+  # operational capacity decision, not a statistical one.
+  alert_rate: 0.01
+
+train:
+  epochs: 60
+  batch_size: 256
+  lr: 0.001
+  weight_decay: 0.00001
+  early_stopping_patience: 8
+  device: auto
