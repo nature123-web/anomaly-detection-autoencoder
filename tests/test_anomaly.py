@@ -271,6 +271,21 @@ def test_explain_row_returns_the_largest_contributors():
     assert [name for name, _ in top] == ["b", "d"]
 
 
+def test_render_alert_is_printable_on_a_legacy_console_codepage():
+    """render_alert used to build its bar with the Unicode block character
+    '█', which crashes with UnicodeEncodeError the moment it reaches
+    print() on a console still using cp1252 -- the Windows default outside
+    Windows Terminal. The whole point of an alert is that it gets printed,
+    so the string this returns must survive that encoding.
+    """
+    from src.predict import render_alert
+
+    attribution = np.array([0.1, 5.0, 0.2, 3.0])
+    names = ["a", "b", "c", "d"]
+    text = render_alert(0, 4.2, 3.5, attribution, names, top_k=4)
+    text.encode("cp1252")  # raises UnicodeEncodeError on a regression
+
+
 def test_baselines_return_a_score_per_row():
     rng = np.random.default_rng(0)
     X_train = rng.normal(size=(300, 8))

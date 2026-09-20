@@ -38,7 +38,11 @@ def render_alert(index: int, score: float, threshold: float,
     largest = max(value for _, value in top) or 1.0
     lines = [f"row {index}   score {score:.4f}   (threshold {threshold:.4f})"]
     for name, value in top:
-        bar = "█" * int(round(28 * value / largest))
+        # ASCII rather than a Unicode block character: this string goes
+        # straight to print(), and a console stuck on a legacy codepage
+        # (cp1252 is still the Windows default outside Windows Terminal)
+        # raises UnicodeEncodeError on U+2588 instead of printing the alert.
+        bar = "#" * int(round(28 * value / largest))
         lines.append(f"  {name:<14} {value:8.4f}  {bar}")
     return "\n".join(lines)
 
